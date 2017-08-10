@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/hugoc_000/Dropbox/HKEPC/4QPS/stm32f103rct6/cubemx/mx003/stm32f103rct6-003/Inc
+HeaderPath=C:/Users/hugoc_000/Desktop/HKEPC/DIY-projects/mx003/stm32f103rct6-003/Inc
 HeaderFiles=stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;
-SourcePath=C:/Users/hugoc_000/Dropbox/HKEPC/4QPS/stm32f103rct6/cubemx/mx003/stm32f103rct6-003/Src
+SourcePath=C:/Users/hugoc_000/Desktop/HKEPC/DIY-projects/mx003/stm32f103rct6-003/Src
 SourceFiles=stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;stm32f1xx_it.c;stm32f1xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]

@@ -122,21 +122,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-
-  //*************************************************************************** TESTING DAC
-//  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048);
-//  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 1024);
-//
-//  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-//  HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
-
-
   while (1)
   {
   /* USER CODE END WHILE */
-	  if (user_code_entry()) return 1;
+
   /* USER CODE BEGIN 3 */
+	  user_code_entry();
+	  return 1;
   }
   /* USER CODE END 3 */
 
@@ -208,12 +200,12 @@ static void MX_ADC1_Init(void)
     /**Common config 
     */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = 2;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -224,6 +216,15 @@ static void MX_ADC1_Init(void)
   sConfig.Channel = ADC_CHANNEL_10;
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure Regular Channel 
+    */
+  sConfig.Channel = ADC_CHANNEL_11;
+  sConfig.Rank = 2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -279,7 +280,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi2.Init.NSS = SPI_NSS_HARD_INPUT;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
   hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
@@ -389,30 +390,30 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_4|GPIO_PIN_5 
-                          |GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_12, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_4 
+                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8 
+                          |GPIO_PIN_12, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PC13 PC14 PC4 PC5 
-                           PC6 PC7 PC8 PC12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_4|GPIO_PIN_5 
-                          |GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_12;
+  /*Configure GPIO pins : PC13 PC14 PC15 PC4 
+                           PC5 PC6 PC7 PC8 
+                           PC12 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_4 
+                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8 
+                          |GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PC15 PC9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_15|GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
   /*Configure GPIO pins : PA6 PA7 */
   GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB0 PB1 PB8 PB9 */
@@ -426,6 +427,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PC9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PC11 */
   GPIO_InitStruct.Pin = GPIO_PIN_11;

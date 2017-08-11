@@ -1,5 +1,6 @@
 #include "stm32f1xx_hal.h"
 #include "user_code.h"
+#include "DAC80004.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -138,6 +139,7 @@ int msg_loop() {
 			case no_command:
 					break;
 			case set_voltage:
+				if (DAC80004_Set(1,2, 3, 4, 1)) return 1;
 			case set_current:
 			case read_voltage:
 			case read_current:
@@ -160,6 +162,7 @@ int msg_loop() {
 
 
 int user_code_entry() {
+		DAC80004_Init();
 		msg_loop();  // should stay in the infinite loop
 //	}
 return 1;  // error occured

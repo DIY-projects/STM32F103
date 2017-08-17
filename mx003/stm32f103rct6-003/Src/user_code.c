@@ -1,6 +1,7 @@
 #include "stm32f1xx_hal.h"
 #include "user_code.h"
 #include "DAC80004.h"
+#include "ADS8694.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -162,8 +163,10 @@ int msg_loop() {
 
 
 int user_code_entry() {
-		DAC80004_Init();
-		msg_loop();  // should stay in the infinite loop
+	__HAL_SPI_ENABLE(&hspi2);
+	DAC80004_Init();
+	ADS8694_Init();
+	msg_loop();  // should stay in the infinite loop
 //	}
 return 1;  // error occured
 }

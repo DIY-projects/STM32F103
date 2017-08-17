@@ -5,28 +5,19 @@
  *      Author: hugoc_000
  */
 
-
 #define	DAC80004_LD_PORT		GPIOB
 #define	DAC80004_LD_PIN			GPIO_PIN_0
 #define	DAC80004_CS_PORT		GPIOB
 #define	DAC80004_CS_PIN			GPIO_PIN_1
 
-#define SPI2_TIMEOUT			100
+#ifdef	SPI2_TIMEOUT
+#undef	SPI2_TIMEOUT
+#endif
+#define	SPI2_TIMEOUT			(uint32_t)100
 
 
 #include "DAC80004.h"
-#include "stm32f1xx_hal.h"
 #include <string.h>
-
-
-//#include "Chip.h"
-//#include "Compiler.h"
-//#include "ConfigPins.h"
-//#include "ConfigDevices.h"
-//
-//#include "Board.h"
-//#include "Oscillator.h"
-//#include "MSPI.h"
 
 typedef union _tag_DAC80004_REG
 {
@@ -70,10 +61,8 @@ typedef struct _tagDAC80004_State
 }DAC80004_State;
 
 DAC80004_State DAC80004;
-extern SPI_HandleTypeDef hspi2;
 
-void DAC80004_SetupData(DAC80004_REG * pReg, uint8_t * pByte, uint16_t Data)
-{
+void DAC80004_SetupData(DAC80004_REG * pReg, uint8_t * pByte, uint16_t Data) {
     pReg->DAC_Data = Data;
     pByte[0] = pReg->byte[3];
     pByte[1] = pReg->byte[2];
@@ -81,22 +70,6 @@ void DAC80004_SetupData(DAC80004_REG * pReg, uint8_t * pByte, uint16_t Data)
     pByte[3] = pReg->byte[0];
 }
 
-//void DAC80004_Write_Init(void *pObj)
-//{
-//    LAT(PIN_DAC80004_CS) = 0;
-//}
-//
-//void DAC80004_Write_Done(void * pObj)
-//{
-//    bool load = (bool)pObj;
-//    LAT(PIN_DAC80004_CS) = 1;
-//    if(load)
-//    {
-//        LAT(PIN_DAC80004_LD) = 0;
-//        DelayUs(20);
-//        LAT(PIN_DAC80004_LD) = 1;
-//    }
-//}
 
 int DAC80004_WriteReg(uint8_t* data, _Bool ld) {
 
@@ -112,16 +85,11 @@ int DAC80004_WriteReg(uint8_t* data, _Bool ld) {
 }
 
 
-int DAC80004_Set(uint16_t A, uint16_t B, uint16_t C, uint16_t D, _Bool load)
-{
+int DAC80004_Set(uint16_t A, uint16_t B, uint16_t C, uint16_t D, _Bool load) {
     DAC80004_SetupData(&DAC80004.RegA, DAC80004.DataA, A);
     DAC80004_SetupData(&DAC80004.RegB, DAC80004.DataB, B);
     DAC80004_SetupData(&DAC80004.RegC, DAC80004.DataC, C);
     DAC80004_SetupData(&DAC80004.RegD, DAC80004.DataD, D);
-//    MSPIEnqueue(DAC80004_SPI_CHANNEL, 0, DAC80004.DataA, 0, 4, 0, DAC80004_Write_Init, DAC80004_Write_Done);
-//    MSPIEnqueue(DAC80004_SPI_CHANNEL, 0, DAC80004.DataB, 0, 4, 0, DAC80004_Write_Init, DAC80004_Write_Done);
-//    MSPIEnqueue(DAC80004_SPI_CHANNEL, 0, DAC80004.DataC, 0, 4, 0, DAC80004_Write_Init, DAC80004_Write_Done);
-//    MSPIEnqueue(DAC80004_SPI_CHANNEL, 0, DAC80004.DataD, 0, 4, (void *)load, DAC80004_Write_Init, DAC80004_Write_Done);
     if (DAC80004_WriteReg(DAC80004.DataA,0)) return 1;
     if (DAC80004_WriteReg(DAC80004.DataB,0)) return 1;
     if (DAC80004_WriteReg(DAC80004.DataC,0)) return 1;
@@ -129,17 +97,10 @@ int DAC80004_Set(uint16_t A, uint16_t B, uint16_t C, uint16_t D, _Bool load)
     return 0;
 }
 
-void DAC80004_Init(void)
-{
-	__HAL_SPI_ENABLE(&hspi2);
 
+void DAC80004_Init(void) {
 	HAL_GPIO_WritePin(DAC80004_CS_PORT, DAC80004_CS_PIN, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(DAC80004_LD_PORT, DAC80004_LD_PIN, GPIO_PIN_SET);
-//	LAT(PIN_DAC80004_CS) = 1;
-//    LAT(PIN_DAC80004_LD) = 1;
-//    TRIS(PIN_DAC80004_CS) = 0;
-//    TRIS(PIN_DAC80004_LD) = 0;
-
     memset(&DAC80004, 0, sizeof(DAC80004));
     DAC80004.RegB.Channel = 1;
     DAC80004.RegC.Channel = 2;
